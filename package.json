@@ -1,22 +1,30 @@
 {
-  "name": "app",
+  "name": "whitepouches-node",
   "version": "1.0.0",
-  "type": "module",
-  "main": "app.js",
+  "main": "dist/main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "serve": "node app.js",
-    "dev": "nodemon app.js"
+    "build": "tsc",
+    "start": "node dist/main.js",
+    "dev": "nodemon"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "dependencies": {
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "joi": "^17.13.3",
-    "mongodb": "^6.8.1",
     "mongoose": "^8.6.1"
-  }
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.2",
+    "@types/dotenv": "^8.2.0",
+    "@types/express": "^4.17.21",
+    "@types/mongoose": "^5.11.97",
+    "@types/node": "^22.5.4"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
 }
