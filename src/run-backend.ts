@@ -26,11 +26,8 @@ export function runBackend(routers: Array<{ path: string, router: express.Router
         app.use(path, router)
       })
 
-      // const port = process.env.PORT || 3000
-      // app.listen(port, () => console.log(`Server is running on port ${port}...`))
-
-      const port = Number(process.env.PORT) || 3000;
-      app.listen(port, '0.0.0.0', () => console.log(`Server is running on port ${port}...`));
+      const port = process.env.PORT || 3000
+      app.listen(port, () => console.log(`Server is running on port ${port}...`))
     })
     .catch((error) => {
       console.log('Connection to the database failed:', (error as Error).message)
