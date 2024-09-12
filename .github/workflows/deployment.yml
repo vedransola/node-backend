@@ -52,3 +52,4 @@ jobs:
 
       - name: Restart the server
         run: pm2 restart BackendAPI
+        
