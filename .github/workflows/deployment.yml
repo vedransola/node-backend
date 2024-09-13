@@ -54,4 +54,4 @@ jobs:
           aws-region: eu-north-1
 
       - name: Restart the server
-        run: pm2 restart BackendAPI
+        run: pm2 restart whitepouches-node
