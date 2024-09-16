@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import cors from 'cors'
 import dotenv from 'dotenv'
 import express from 'express'
 
@@ -19,6 +20,14 @@ export function runBackend(routers: Array<{ path: string, router: express.Router
       console.log('Connected to the database')
 
       const app = express()
+
+      const corsOptions = {
+        origin: '*', // Allow all origins
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+        allowedHeaders: ['Content-Type', 'Authorization']
+      }
+
+      app.use(cors(corsOptions))
       app.use(express.json())
 
       // Mount all routers passed in
