@@ -2,6 +2,7 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import express from 'express'
 import { connectMongoDB } from './config/mongodb-connection'
+import { createPostgresPool } from './config/postgres-connection'
 
 dotenv.config()
 
@@ -22,6 +23,15 @@ export function runBackend(routers: Array<{ path: string, router: express.Router
   connectMongoDB()
     .then(() => console.log('Connected to MongoDB'))
     .catch((error) => console.error('MongoDB connection failed:', error.message))
+
+  // Connect to PostgreSQL
+  const pgPool = createPostgresPool()
+  pgPool.connect()
+    .then((client) => {
+    console.log('Connected to PostgreSQL')
+    client.release() // Release client back to pool
+  })
+  .catch((error) => console.error('PostgreSQL connection failed:', error.message))
 
   // Mount all routers passed in
   routers.forEach(({ path, router }) => {
