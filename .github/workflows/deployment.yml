@@ -43,8 +43,5 @@ jobs:
           echo "MONGODB_DATABASE=${{ secrets.MONGODB_DATABASE }}" >> .env
           echo "MONGODB_APPNAME=${{ secrets.MONGODB_APPNAME }}" >> .env
 
-      - name: Move .env into dist folder
-        run: mv .env dist/
-
       - name: Restart the server
         run: pm2 restart whitepouches-node
