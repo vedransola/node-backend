@@ -1,5 +1,5 @@
 import { runBackend } from './run-backend'
-import productRouter from './controller/product'
+import productRouter from './routes/product.route'
 
 runBackend([
   {
