@@ -12,14 +12,17 @@ export function runBackend(routers: Array<{ path: string, router: express.Router
   const app = express()
 
   const corsOptions = {
-    origin: '*',
+    origin: '*', // Allow all origins (for development purposes)
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
   }
 
-  app.use(authenticateToken)
+  // Apply CORS before other middlewares
   app.use(cors(corsOptions))
+
+  // Apply other middlewares
   app.use(express.json())
+  app.use(authenticateToken)
 
   // Connect to MongoDB
   connectMongoDB()
@@ -30,10 +33,10 @@ export function runBackend(routers: Array<{ path: string, router: express.Router
   const pgPool = createPostgresPool()
   pgPool.connect()
     .then((client) => {
-    console.log('Connected to PostgreSQL')
-    client.release() // Release client back to pool
-  })
-  .catch((error) => console.error('PostgreSQL connection failed:', error.message))
+      console.log('Connected to PostgreSQL')
+      client.release() // Release client back to pool
+    })
+    .catch((error) => console.error('PostgreSQL connection failed:', error.message))
 
   // Mount all routers passed in
   routers.forEach(({ path, router }) => {
