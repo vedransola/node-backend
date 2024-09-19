@@ -1,6 +1,7 @@
 import cors from 'cors'
 import dotenv from 'dotenv'
 import express from 'express'
+import authenticateToken from './middlewares/authenticateToken'
 import { connectMongoDB } from './config/mongodb-connection'
 import { createPostgresPool } from './config/postgres-connection'
 
@@ -16,6 +17,7 @@ export function runBackend(routers: Array<{ path: string, router: express.Router
     allowedHeaders: ['Content-Type', 'Authorization']
   }
 
+  app.use(authenticateToken)
   app.use(cors(corsOptions))
   app.use(express.json())
 

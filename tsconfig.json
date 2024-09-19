@@ -8,6 +8,9 @@
     "esModuleInterop": true,
     "skipLibCheck": true
   },
+  "files": [
+    "src/custom.d.ts"
+  ],
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]
 }
