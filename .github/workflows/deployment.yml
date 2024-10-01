@@ -55,5 +55,11 @@ jobs:
           echo "POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}" >> .env
           echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
 
+  deploy:
+    runs-on: self-hosted
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master' || github.event_name == 'pull_request' && github.event.action == 'closed' && github.ref == 'refs/heads/master' && github.event.pull_request.merged == true
+
+    steps:
       - name: Restart the server
         run: pm2 restart whitepouches-node
