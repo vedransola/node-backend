@@ -1,12 +1,12 @@
-name: Deploy to EC2
+name: Node.js CI for PRs
 
 on:
-  push:
+  pull_request:  # This will trigger on any pull request
     branches:
-      - master
+      - '**'  # This pattern matches any branch
 
 jobs:
-  deploy:
+  build:
     runs-on: self-hosted
 
     steps:
@@ -35,20 +35,3 @@ jobs:
           POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
         run: npm run build
-
-      - name: Create .env
-        run: |
-          touch .env
-          echo "MONGODB_USERNAME=${{ secrets.MONGODB_USERNAME }}" > .env
-          echo "MONGODB_PASSWORD=${{ secrets.MONGODB_PASSWORD }}" >> .env
-          echo "MONGODB_DATABASE=${{ secrets.MONGODB_DATABASE }}" >> .env
-          echo "MONGODB_APPNAME=${{ secrets.MONGODB_APPNAME }}" >> .env
-          echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" >> .env
-          echo "POSTGRES_HOST=${{ secrets.POSTGRES_HOST }}" >> .env
-          echo "POSTGRES_DATABASE=${{ secrets.POSTGRES_DATABASE }}" >> .env
-          echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
-          echo "POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}" >> .env
-          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
-
-      - name: Restart the server
-        run: pm2 restart whitepouches-node
