@@ -1,9 +1,8 @@
 name: Node.js CI for PRs
 
 on:
-  pull_request:  # This will trigger on any pull request
-    branches:
-      - '**'  # This pattern matches any branch
+  pull_request:
+    types: [opened, synchronize, reopened] # Trigger for all PRs
 
 jobs:
   build:
