@@ -37,20 +37,15 @@ jobs:
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
         run: npm run build
 
-      - name: Verify build output
-        run: |
-          echo "Checking build directory contents"
-          ls -R dist/
-
   deploy:
     runs-on: ubuntu-latest
     needs: build
     if: >
       github.event_name == 'push' && github.ref == 'refs/heads/master' ||
       (github.event_name == 'pull_request' &&
-      github.event.action == 'closed' &&
-      github.ref == 'refs/heads/master' &&
-      github.event.pull_request.merged == true)
+       github.event.action == 'closed' &&
+       github.ref == 'refs/heads/master' &&
+       github.event.pull_request.merged == true)
 
     steps:
       - name: Create .env
@@ -67,12 +62,31 @@ jobs:
           echo "POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}" >> .env
           echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
 
-      - name: Deploy to EC2 using SSH Deploy
-        uses: easingthemes/ssh-deploy@v2.1.5
+      - name: Transfer Build Folder on EC2 Instance
+        uses: appleboy/scp-action@master
         with:
-          SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_KEY }}
-          REMOTE_HOST: ${{ secrets.DEPLOY_HOST }}
-          REMOTE_USER: ${{ secrets.DEPLOY_USER }}
-          REMOTE_PORT: ${{ secrets.DEPLOY_PORT }}
-          SOURCE: "dist/**, .env"       # Use `dist/**` to include all nested directories and files
-          TARGET: ${{ secrets.DEPLOY_TARGET }}
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_KEY }}
+          port: ${{ secrets.DEPLOY_PORT }}
+          source: "."
+          target: ${{ secrets.DEPLOY_TARGET }}
+
+      - name: Transfer .env File
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_KEY }}
+          port: ${{ secrets.DEPLOY_PORT }}
+          source: ".env"
+          target: ${{ secrets.DEPLOY_TARGET }}
+
+      - name: Manage PM2 process
+        run: |
+          echo "${{ secrets.DEPLOY_KEY }}" > deploy_key.pem
+          chmod 600 deploy_key.pem
+          ssh -i deploy_key.pem -o StrictHostKeyChecking=no ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'EOF'
+            /usr/bin/pm2 restart whitepouches-node || /usr/bin/pm2 start dist/your-app.js --name whitepouches-node
+          EOF
+          rm deploy_key.pem
