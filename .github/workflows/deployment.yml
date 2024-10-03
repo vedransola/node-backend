@@ -47,5 +47,4 @@ jobs:
           script: |
             cd /home/ubuntu/deploy
             tar -xzf app.tar.gz
-            npm install --production  # Install only production dependencies
-            pm2 restart myapp || pm2 start dist/index.js --name myapp  # Use PM2 for process management
+            npm install
