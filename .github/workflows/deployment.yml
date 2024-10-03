@@ -65,12 +65,12 @@ jobs:
       - name: List build files
         run: ls -R
 
-      - name: Transfer Build Folder and .env File on EC2 Instance
+      - name: Deploy to EC2 using SSH Deploy
         uses: easingthemes/ssh-deploy@v2.1.5
         with:
-          host: ${{ secrets.DEPLOY_HOST }}
-          username: ${{ secrets.DEPLOY_USER }}
-          key: ${{ secrets.DEPLOY_KEY }}
-          port: ${{ secrets.DEPLOY_PORT }}
-          source: "dist/*,.env"  # Make sure this path matches your build output
-          target: ${{ secrets.DEPLOY_TARGET }}
+          SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_KEY }}   # Use SSH_PRIVATE_KEY instead of key
+          REMOTE_HOST: ${{ secrets.DEPLOY_HOST }}       # Use REMOTE_HOST instead of host
+          REMOTE_USER: ${{ secrets.DEPLOY_USER }}       # Use REMOTE_USER instead of username
+          REMOTE_PORT: ${{ secrets.DEPLOY_PORT }}       # Use REMOTE_PORT instead of port
+          SOURCE: "dist/*,.env"                         # Use comma-separated values for multiple files
+          TARGET: ${{ secrets.DEPLOY_TARGET }}          # Target directory on the EC2 instance
