@@ -37,6 +37,11 @@ jobs:
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
         run: npm run build
 
+      - name: Verify build output
+        run: |
+          echo "Checking build directory contents"
+          ls -R dist/
+
   deploy:
     runs-on: ubuntu-latest
     needs: build
