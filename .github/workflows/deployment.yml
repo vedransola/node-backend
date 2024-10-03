@@ -71,10 +71,12 @@ jobs:
           REMOTE_PORT: ${{ secrets.DEPLOY_PORT }}
           SOURCE: "."
           TARGET: ${{ secrets.DEPLOY_TARGET }}
-  
+
       - name: Transfer .env File
         run: |
-          scp -o StrictHostKeyChecking=no -i ${{ secrets.DEPLOY_KEY }} .env ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:${{ secrets.DEPLOY_TARGET }}
+          echo "${{ secrets.DEPLOY_KEY }}" > deploy_key.pem
+          chmod 600 deploy_key.pem
+          scp -o StrictHostKeyChecking=no -i deploy_key.pem .env ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:${{ secrets.DEPLOY_TARGET }}
 
       - name: Manage PM2 Process
         run: pm2 restart whitepouches-node
