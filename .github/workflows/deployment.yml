@@ -78,5 +78,11 @@ jobs:
           chmod 600 deploy_key.pem
           scp -o StrictHostKeyChecking=no -i deploy_key.pem .env ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:${{ secrets.DEPLOY_TARGET }}
 
-      - name: Manage PM2 Process
-        run: /usr/bin/pm2 restart whitepouches-node
+      # - name: Manage PM2 Process
+      #   run: /usr/bin/pm2 restart whitepouches-node
+
+      - name: Manage PM2 process
+        run: |
+          ssh -i ${{ secrets.DEPLOY_KEY }} -o StrictHostKeyChecking=no ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'EOF'
+            /usr/bin/pm2 restart whitepouches-node || /usr/bin/pm2 start dist/your-app.js --name whitepouches-node
+            
