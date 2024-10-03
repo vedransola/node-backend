@@ -1,86 +1,51 @@
-name: Node.js CI
+name: Deploy to EC2
 
 on:
   push:
-    branches: ['master']
-  pull_request:
-    branches: ['master']
+    branches:
+      - main  # Change this to your preferred branch
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v2
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v2
         with:
-          node-version: '18.x'
-          cache: 'npm'
+          node-version: '16'  # Change to your desired Node.js version
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
-      - name: Build the application
-        env:
-          MONGODB_USERNAME: ${{ secrets.MONGODB_USERNAME }}
-          MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
-          MONGODB_DATABASE: ${{ secrets.MONGODB_DATABASE }}
-          MONGODB_APPNAME: ${{ secrets.MONGODB_APPNAME }}
-          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-          POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
-          POSTGRES_DATABASE: ${{ secrets.POSTGRES_DATABASE }}
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
-        run: npm run build && ls -al dist/
-        
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-    if: >
-      github.event_name == 'push' && github.ref == 'refs/heads/master' ||
-      (github.event_name == 'pull_request' &&
-       github.event.action == 'closed' &&
-       github.ref == 'refs/heads/master' &&
-       github.event.pull_request.merged == true)
+      - name: Build the app
+        run: npm run build  # Ensure you have a build script in package.json
 
-    steps:
-      - name: List contents of the build directory
-        run: ls -al dist/
+      - name: Archive production artifacts
+        run: tar -czf app.tar.gz ./dist ./package.json ./.env  # Adjust as needed
 
-      - name: Create .env file
-        run: |
-          touch .env
-          echo "MONGODB_USERNAME=${{ secrets.MONGODB_USERNAME }}" > .env
-          echo "MONGODB_PASSWORD=${{ secrets.MONGODB_PASSWORD }}" >> .env
-          echo "MONGODB_DATABASE=${{ secrets.MONGODB_DATABASE }}" >> .env
-          echo "MONGODB_APPNAME=${{ secrets.MONGODB_APPNAME }}" >> .env
-          echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" >> .env
-          echo "POSTGRES_HOST=${{ secrets.POSTGRES_HOST }}" >> .env
-          echo "POSTGRES_DATABASE=${{ secrets.POSTGRES_DATABASE }}" >> .env
-          echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
-          echo "POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}" >> .env
-          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
-
-      - name: Transfer Build Folder and .env to EC2
-        uses: easingthemes/ssh-deploy@v2.1.5
+      - name: Copy files to EC2
+        uses: appleboy/scp-action@master
         with:
-          ssh_private_key: ${{ secrets.DEPLOY_KEY }}
-          remote_host: ${{ secrets.DEPLOY_HOST }}
-          remote_user: ${{ secrets.DEPLOY_USER }}
-          target: ${{ secrets.DEPLOY_TARGET }}
-          source: |
-            dist/    # Specify build folder
-            .env     # Include .env file
+          host: ${{ secrets.DEPLOY_HOST }}  # Your EC2 public IP
+          username: ec2-user  # Change to your EC2 username
+          key: ${{ secrets.DEPLOY_KEY }}  # Your EC2 SSH key
+          port: 22  # Change if you're using a different port
+          source: "app.tar.gz"  # The file you want to transfer
+          target: "/home/ubuntu/deploy"  # Change to your app's directory on EC2
 
-      - name: Restart Application with PM2
-        run: |
-          echo "${{ secrets.DEPLOY_KEY }}" > deploy_key.pem
-          chmod 600 deploy_key.pem
-          ssh -i deploy_key.pem -o StrictHostKeyChecking=no ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'EOF'
-            pm2 restart your-app-name || pm2 start dist/main.js --name your-app-name
-          EOF
-          rm deploy_key.pem
+      - name: SSH into EC2 and deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}  # Your EC2 public IP
+          username: ec2-user  # Change to your EC2 username
+          key: ${{ secrets.DEPLOY_KEY }}  # Your EC2 SSH key
+          port: 22  # Change if you're using a different port
+          script: |
+            cd /var/www/myapp
+            tar -xzf app.tar.gz
+            npm install --production  # Install only production dependencies
+            pm2 restart myapp || pm2 start dist/index.js --name myapp  # Use PM2 for process management
