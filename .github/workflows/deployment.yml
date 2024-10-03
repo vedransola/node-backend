@@ -79,5 +79,4 @@ jobs:
           scp -o StrictHostKeyChecking=no -i deploy_key.pem .env ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:${{ secrets.DEPLOY_TARGET }}
 
       - name: Manage PM2 Process
-        run: pm2 restart whitepouches-node
-        
+        run: /usr/bin/pm2 restart whitepouches-node
