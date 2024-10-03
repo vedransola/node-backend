@@ -25,12 +25,7 @@ jobs:
         run: npm run build  # Ensure you have a build script in package.json
 
       - name: Archive production artifacts
-        run: |
-          mkdir -p release  # Create a release directory
-          cp -R ./* # Copy everything to the release directory
-          cp -R ./.* # Include hidden files (like .env if needed)
-          cd release
-          tar -czf app.tar.gz .  # Create a tarball from the release directory
+        run: tar -czf app.tar.gz ./dist ./package.json # Adjust as needed
 
       - name: Copy files to EC2
         uses: appleboy/scp-action@master
@@ -39,7 +34,7 @@ jobs:
           username: ${{ secrets.DEPLOY_USER }}  # Change to your EC2 username
           key: ${{ secrets.DEPLOY_KEY }}  # Your EC2 SSH key
           port: 22  # Change if you're using a different port
-          source: "release/app.tar.gz"  # The file you want to transfer
+          source: "app.tar.gz"  # The file you want to transfer
           target: "/home/ubuntu/deploy"  # Change to your app's directory on EC2
 
       - name: SSH into EC2 and deploy
@@ -52,4 +47,4 @@ jobs:
           script: |
             cd /home/ubuntu/deploy
             tar -xzf app.tar.gz
-            npm install --production  # Install only production dependencies
+            npm install
