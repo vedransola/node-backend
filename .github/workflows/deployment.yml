@@ -51,7 +51,7 @@ jobs:
 
       - name: Create .env file
         run: |
-          touch dist/.env
+          touch .env
           echo "MONGODB_USERNAME=${{ secrets.MONGODB_USERNAME }}" > .env
           echo "MONGODB_PASSWORD=${{ secrets.MONGODB_PASSWORD }}" >> .env
           echo "MONGODB_DATABASE=${{ secrets.MONGODB_DATABASE }}" >> .env
