@@ -27,8 +27,8 @@ jobs:
       - name: Archive production artifacts
         run: |
           mkdir -p release  # Create a release directory
-          cp -R ./* ./release  # Copy everything to the release directory
-          cp -R ./.* ./release  # Include hidden files (like .env if needed)
+          cp -R ./* # Copy everything to the release directory
+          cp -R ./.* # Include hidden files (like .env if needed)
           cd release
           tar -czf app.tar.gz .  # Create a tarball from the release directory
 
