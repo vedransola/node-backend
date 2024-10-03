@@ -16,7 +16,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '16'  # Change to your desired Node.js version
+          node-version: '18'  # Change to your desired Node.js version
 
       - name: Install dependencies
         run: npm install
@@ -25,7 +25,7 @@ jobs:
         run: npm run build  # Ensure you have a build script in package.json
 
       - name: Archive production artifacts
-        run: tar -czf whitepouches.tar.gz .
+        run: tar -czf app.tar.gz .
 
       - name: Copy files to EC2
         uses: appleboy/scp-action@master
@@ -34,7 +34,7 @@ jobs:
           username: ${{ secrets.DEPLOY_USER }}  # Change to your EC2 username
           key: ${{ secrets.DEPLOY_KEY }}  # Your EC2 SSH key
           port: 22  # Change if you're using a different port
-          source: "whitepouches.tar.gz"  # The file you want to transfer
+          source: "app.tar.gz"  # The file you want to transfer
           target: "/home/ubuntu/deploy"  # Change to your app's directory on EC2
 
       - name: SSH into EC2 and deploy
@@ -46,5 +46,5 @@ jobs:
           port: 22  # Change if you're using a different port
           script: |
             cd /home/ubuntu/deploy
-            tar -xzf whitepouches.tar.gz
+            tar -xzf app.tar.gz
             npm install
