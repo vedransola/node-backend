@@ -74,14 +74,14 @@ jobs:
           remote_user: ${{ secrets.DEPLOY_USER }}
           target: ${{ secrets.DEPLOY_TARGET }}
           source: |
-            dist/  # Specify build folder
-            .env   # Include .env file as well
+            dist/    # Use a single valid path for the dist folder
+            .env     # Include the .env file
 
-      - name: Restart Application with PM2
-        run: |
-          echo "${{ secrets.DEPLOY_KEY }}" > deploy_key.pem
-          chmod 600 deploy_key.pem
-          ssh -i deploy_key.pem -o StrictHostKeyChecking=no ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'EOF'
-            pm2 restart your-app-name || pm2 start dist/main.js --name your-app-name
-          EOF
-          rm deploy_key.pem
+      # - name: Restart Application with PM2
+      #   run: |
+      #     echo "${{ secrets.DEPLOY_KEY }}" > deploy_key.pem
+      #     chmod 600 deploy_key.pem
+      #     ssh -i deploy_key.pem -o StrictHostKeyChecking=no ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'EOF'
+      #       pm2 restart your-app-name || pm2 start dist/main.js --name your-app-name
+      #     EOF
+      #     rm deploy_key.pem
