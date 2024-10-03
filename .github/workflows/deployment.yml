@@ -37,21 +37,20 @@ jobs:
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
         run: npm run build
 
-      - name: List build directory contents
-        run: ls -al dist/
-
-
   deploy:
     runs-on: ubuntu-latest
     needs: build
     if: >
       github.event_name == 'push' && github.ref == 'refs/heads/master' ||
       (github.event_name == 'pull_request' &&
-      github.event.action == 'closed' &&
-      github.ref == 'refs/heads/master' &&
-      github.event.pull_request.merged == true)
+       github.event.action == 'closed' &&
+       github.ref == 'refs/heads/master' &&
+       github.event.pull_request.merged == true)
 
     steps:
+      - name: List contents of the build directory
+        run: ls -al dist/
+
       - name: Create .env file
         run: |
           touch .env
@@ -74,14 +73,14 @@ jobs:
           remote_user: ${{ secrets.DEPLOY_USER }}
           target: ${{ secrets.DEPLOY_TARGET }}
           source: |
-            dist/    # Use a single valid path for the dist folder
-            .env     # Include the .env file
+            dist/    # Specify build folder
+            .env     # Include .env file
 
-      # - name: Restart Application with PM2
-      #   run: |
-      #     echo "${{ secrets.DEPLOY_KEY }}" > deploy_key.pem
-      #     chmod 600 deploy_key.pem
-      #     ssh -i deploy_key.pem -o StrictHostKeyChecking=no ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'EOF'
-      #       pm2 restart your-app-name || pm2 start dist/main.js --name your-app-name
-      #     EOF
-      #     rm deploy_key.pem
+      - name: Restart Application with PM2
+        run: |
+          echo "${{ secrets.DEPLOY_KEY }}" > deploy_key.pem
+          chmod 600 deploy_key.pem
+          ssh -i deploy_key.pem -o StrictHostKeyChecking=no ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'EOF'
+            pm2 restart your-app-name || pm2 start dist/main.js --name your-app-name
+          EOF
+          rm deploy_key.pem
