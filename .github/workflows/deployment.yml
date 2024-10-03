@@ -53,7 +53,7 @@ jobs:
           echo "${{ secrets.DEPLOY_KEY }}" > deploy_key.pem
           chmod 600 deploy_key.pem
           ssh -i deploy_key.pem -o StrictHostKeyChecking=no ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'EOF'
-            sudo rm -rf ${{ secrets.DEPLOY_TARGET }}/*
+            sudo rm -rf /home/ubuntu/${{ secrets.DEPLOY_TARGET }}/*
           EOF
           rm deploy_key.pem
 
