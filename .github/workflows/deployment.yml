@@ -54,8 +54,6 @@ jobs:
           chmod 600 deploy_key.pem
           ssh -i deploy_key.pem -o StrictHostKeyChecking=no ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'EOF'
             rm -rf /home/ubuntu/deploy/*
-          EOF
-          rm deploy_key.pem
 
       - name: Create .env
         run: |
