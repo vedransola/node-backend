@@ -62,13 +62,6 @@ jobs:
        github.event.pull_request.merged == true)
 
     steps:
-      - uses: actions/checkout@v2
-      - name: Use Node.js 18.x to Build
-        uses: actions/setup-node@v2
-        with:
-          node-version: 18.x
-      - run: npm install
-      - run: CI=false npm run build
       - name: Transfer Build Folder on EC2 Instance
         uses: easingthemes/ssh-deploy@v2.1.4
         env:
@@ -78,5 +71,10 @@ jobs:
           REMOTE_PORT: ${{ secrets.DEPLOY_PORT }}
           SOURCE: "."
           TARGET: ${{ secrets.DEPLOY_TARGET }}
+  
+      - name: Transfer .env File
+        run: |
+          scp -o StrictHostKeyChecking=no -i ${{ secrets.DEPLOY_KEY }} .env ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:${{ secrets.DEPLOY_TARGET }}
+
       - name: Manage PM2 Process
         run: pm2 restart whitepouches-node
