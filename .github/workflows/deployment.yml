@@ -35,8 +35,8 @@ jobs:
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
           POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
-        run: npm run build
-
+        run: npm run build && ls -al dist/
+        
   deploy:
     runs-on: ubuntu-latest
     needs: build
