@@ -47,21 +47,12 @@ jobs:
     if: >
       github.event_name == 'push' && github.ref == 'refs/heads/master' ||
       (github.event_name == 'pull_request' &&
-       github.event.action == 'closed' &&
-       github.ref == 'refs/heads/master' &&
-       github.event.pull_request.merged == true)
+      github.event.action == 'closed' &&
+      github.ref == 'refs/heads/master' &&
+      github.event.pull_request.merged == true)
 
     steps:
-      # - name: Clean Target Directory
-      #   run: |
-      #     echo "${{ secrets.DEPLOY_KEY }}" > deploy_key.pem
-      #     chmod 600 deploy_key.pem
-      #     ssh -i deploy_key.pem -o StrictHostKeyChecking=no ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'EOF'
-      #       sudo rm -rf /home/ubuntu/${{ secrets.DEPLOY_TARGET }}/*
-      #     EOF
-      #     rm deploy_key.pem
-
-      - name: Create .env
+      - name: Create .env file
         run: |
           touch .env
           echo "MONGODB_USERNAME=${{ secrets.MONGODB_USERNAME }}" > .env
@@ -75,33 +66,22 @@ jobs:
           echo "POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}" >> .env
           echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
 
-      - name: Transfer Build Folder on EC2 Instance
-        uses: appleboy/scp-action@master
+      - name: Transfer Build Folder and .env to EC2
+        uses: easingthemes/ssh-deploy@v2.1.5
         with:
-          host: ${{ secrets.DEPLOY_HOST }}
-          username: ${{ secrets.DEPLOY_USER }}
-          key: ${{ secrets.DEPLOY_KEY }}
-          port: ${{ secrets.DEPLOY_PORT }}
-          source: "dist/*"  # Ensure this points to your build output directory
+          ssh_private_key: ${{ secrets.DEPLOY_KEY }}
+          remote_host: ${{ secrets.DEPLOY_HOST }}
+          remote_user: ${{ secrets.DEPLOY_USER }}
           target: ${{ secrets.DEPLOY_TARGET }}
-          debug: true  # Enable debug for more detailed logging
+          source: |
+            dist/  # Specify build folder
+            .env   # Include .env file as well
 
-      - name: Transfer .env File
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.DEPLOY_HOST }}
-          username: ${{ secrets.DEPLOY_USER }}
-          key: ${{ secrets.DEPLOY_KEY }}
-          port: ${{ secrets.DEPLOY_PORT }}
-          source: ".env"
-          target: ${{ secrets.DEPLOY_TARGET }}
-
-      # - name: Manage PM2 process
-      #   run: |
-      #     echo "${{ secrets.DEPLOY_KEY }}" > deploy_key.pem
-      #     chmod 600 deploy_key.pem
-      #     ssh -i deploy_key.pem -o StrictHostKeyChecking=no ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'EOF'
-      #       /usr/bin/pm2 restart whitepouches-node || /usr/bin/pm2 start dist/your-app.js --name whitepouches-node
-      #     EOF
-      #     rm deploy_key.pem
-
+      - name: Restart Application with PM2
+        run: |
+          echo "${{ secrets.DEPLOY_KEY }}" > deploy_key.pem
+          chmod 600 deploy_key.pem
+          ssh -i deploy_key.pem -o StrictHostKeyChecking=no ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'EOF'
+            pm2 restart your-app-name || pm2 start dist/main.js --name your-app-name
+          EOF
+          rm deploy_key.pem
