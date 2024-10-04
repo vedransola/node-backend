@@ -2,48 +2,72 @@ name: Deploy to EC2
 
 on:
   push:
-    branches:
-      - master
+    branches: ['master']
+  pull_request:
+    branches: ['master']
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
-          node-version: '18'  # Change to your desired Node.js version
+          node-version: '18'
 
       - name: Install dependencies
         run: npm install
 
       - name: Build the app
-        run: npm run build  # Ensure you have a build script in package.json
+        run: npm run build
 
       - name: Archive production artifacts
-        run: tar -czf whitepouches.tar.gz ./dist ./package.json # Adjust as needed
+        run: tar -czf whitepouches.tar.gz ./dist ./package.json ./generate-jwt.ts
+
+      - name: Upload production artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: whitepouches
+          path: whitepouches.tar.gz
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    if: >
+      github.event_name == 'push' && github.ref == 'refs/heads/master' ||
+      (github.event_name == 'pull_request' &&
+      github.event.action == 'closed' &&
+      github.ref == 'refs/heads/master' &&
+      github.event.pull_request.merged == true)
+
+    steps:
+      - name: Download production artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: whitepouches
 
       - name: Copy files to EC2
         uses: appleboy/scp-action@master
         with:
-          host: ${{ secrets.DEPLOY_HOST }}  # Your EC2 public IP
-          username: ${{ secrets.DEPLOY_USER }}  # Change to your EC2 username
-          key: ${{ secrets.DEPLOY_KEY }}  # Your EC2 SSH key
-          port: 22  # Change if you're using a different port
-          source: 'whitepouches.tar.gz'  # The file you want to transfer
-          target: '/home/ubuntu/deploy'  # Change to your app's directory on EC2
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_KEY }}
+          port: ${{ secrets.DEPLOY_PORT }}
+          source: 'whitepouches.tar.gz'
+          target: '/home/ubuntu/deploy'
 
       - name: SSH into EC2 and deploy
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.DEPLOY_HOST }}  # Your EC2 public IP
-          username: ${{ secrets.DEPLOY_USER }}  # Change to your EC2 username
-          key: ${{ secrets.DEPLOY_KEY }}  # Your EC2 SSH key
-          port: 22  # Change if you're using a different port
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_KEY }}
+          port: ${{ secrets.DEPLOY_PORT }}
           script: |
             cd /home/ubuntu/deploy
             tar -xzf whitepouches.tar.gz
