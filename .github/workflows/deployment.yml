@@ -29,7 +29,7 @@ jobs:
         run: tar -czf whitepouches.tar.gz ./dist ./package.json ./generate-jwt.ts
 
       - name: Upload production artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: whitepouches
           path: whitepouches.tar.gz
@@ -47,7 +47,7 @@ jobs:
 
     steps:
       - name: Download production artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: whitepouches
 
