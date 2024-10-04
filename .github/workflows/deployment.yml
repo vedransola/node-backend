@@ -75,7 +75,7 @@ jobs:
             npm install
 
             # Create .env file on EC2 instance
-            touch .env
+            touch /home/ubuntu/deploy/dist/.env
             echo "MONGODB_USERNAME=${{ secrets.MONGODB_USERNAME }}" >> .env
             echo "MONGODB_PASSWORD=${{ secrets.MONGODB_PASSWORD }}" >> .env
             echo "MONGODB_DATABASE=${{ secrets.MONGODB_DATABASE }}" >> .env
