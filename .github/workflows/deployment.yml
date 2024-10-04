@@ -75,7 +75,7 @@ jobs:
             npm install
 
             # Create .env file on EC2 instance
-            touch dist/.env
+            touch .env
             echo "MONGODB_USERNAME=${{ secrets.MONGODB_USERNAME }}" >> .env
             echo "MONGODB_PASSWORD=${{ secrets.MONGODB_PASSWORD }}" >> .env
             echo "MONGODB_DATABASE=${{ secrets.MONGODB_DATABASE }}" >> .env
@@ -86,3 +86,5 @@ jobs:
             echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
             echo "POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}" >> .env
             echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+            mv .env dist/
+            
