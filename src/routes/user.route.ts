@@ -2,7 +2,8 @@ import express from 'express'
 import {
   getAllUsers,
   getUserById,
-  getUsersByName,
+  getUsersByFirstName,
+  getUsersByLastName,
   createUser,
   updateUser,
   deleteUser
@@ -12,7 +13,8 @@ const userRouter = express.Router()
 
 userRouter.get('/', getAllUsers)
 userRouter.get('/id/:id', getUserById)
-userRouter.get('/firstname/:firstname', getUsersByName)
+userRouter.get('/firstname/:firstname', getUsersByFirstName)
+userRouter.get('/lastname/:lastname', getUsersByLastName)
 userRouter.post('/', createUser)
 userRouter.put('/id/:id', updateUser)
 userRouter.delete('/:id', deleteUser)
