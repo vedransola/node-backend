@@ -23,6 +23,17 @@ jobs:
         run: npm install
 
       - name: Build the app
+        env:
+          MONGODB_USERNAME: ${{ secrets.MONGODB_USERNAME }}
+          MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
+          MONGODB_DATABASE: ${{ secrets.MONGODB_DATABASE }}
+          MONGODB_APPNAME: ${{ secrets.MONGODB_APPNAME }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
+          POSTGRES_DATABASE: ${{ secrets.POSTGRES_DATABASE }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
         run: npm run build
 
       - name: Archive production artifacts
@@ -76,15 +87,15 @@ jobs:
 
             # Create .env file on EC2 instance
             touch .env
-            echo "MONGODB_USERNAME=${{ secrets.MONGODB_USERNAME }}" >> .env
-            echo "MONGODB_PASSWORD=${{ secrets.MONGODB_PASSWORD }}" >> .env
-            echo "MONGODB_DATABASE=${{ secrets.MONGODB_DATABASE }}" >> .env
-            echo "MONGODB_APPNAME=${{ secrets.MONGODB_APPNAME }}" >> .env
-            echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" >> .env
-            echo "POSTGRES_HOST=${{ secrets.POSTGRES_HOST }}" >> .env
-            echo "POSTGRES_DATABASE=${{ secrets.POSTGRES_DATABASE }}" >> .env
-            echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
-            echo "POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}" >> .env
-            echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+            MONGODB_USERNAME: ${{ secrets.MONGODB_USERNAME }}
+            MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
+            MONGODB_DATABASE: ${{ secrets.MONGODB_DATABASE }}
+            MONGODB_APPNAME: ${{ secrets.MONGODB_APPNAME }}
+            POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+            POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
+            POSTGRES_DATABASE: ${{ secrets.POSTGRES_DATABASE }}
+            POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+            POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
+            JWT_SECRET: ${{ secrets.JWT_SECRET }}
             mv .env dist/
-            
+
