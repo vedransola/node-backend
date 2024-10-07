@@ -6,8 +6,14 @@ const pool = createPostgresPool()
 
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
-    const result = await pool.query('SELECT * FROM users')
-    res.status(200).json(result.rows)
+    const query = `
+      SELECT *
+      FROM users
+      ORDER BY id
+    `
+    
+    const result = await pool.query(query)
+    res.status(200).json({ users: result.rows})
   } catch (error) {
     res.status(500).json({ message: (error as Error).message })
   }
@@ -22,18 +28,19 @@ export const getUserById = async (req: Request, res: Response) => {
         SELECT *
         FROM users
         WHERE id = $1
+        LIMIT 1
       `,
       values: [id]
     }
 
     const result = await pool.query(query)
-    res.status(200).json(result.rows)
+    res.status(200).json(result.rows?.[0])
   } catch (error) {
     res.status(500).json({ message: (error as Error).message })
   }
 }
 
-export const getUsersByName = async (req: Request, res: Response) => {
+export const getUsersByFirstName = async (req: Request, res: Response) => {
   const { firstname } = req.params
 
   try {
@@ -44,6 +51,26 @@ export const getUsersByName = async (req: Request, res: Response) => {
         WHERE firstname = $1
       `,
       values: [firstname]
+    }
+
+    const result = await pool.query(query)
+    res.status(200).json(result.rows)
+  } catch (error) {
+    res.status(500).json({ message: (error as Error).message })
+  }
+}
+
+export const getUsersByLastName = async (req: Request, res: Response) => {
+  const { lastname } = req.params
+
+  try {
+    const query = {
+      text: `
+        SELECT *
+        FROM users
+        WHERE lastname = $1
+      `,
+      values: [lastname]
     }
 
     const result = await pool.query(query)
