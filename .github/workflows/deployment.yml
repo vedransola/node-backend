@@ -89,5 +89,4 @@ jobs:
             mv .env dist/
 
       - name: Restart the server
-        run: pm2 restart whitepouches-node
-        
+        run: /usr/local/bin/pm2 restart whitepouches-node
