@@ -23,17 +23,6 @@ jobs:
         run: npm install
 
       - name: Build the app
-        env:
-          MONGODB_USERNAME: ${{ secrets.MONGODB_USERNAME }}
-          MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
-          MONGODB_DATABASE: ${{ secrets.MONGODB_DATABASE }}
-          MONGODB_APPNAME: ${{ secrets.MONGODB_APPNAME }}
-          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-          POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
-          POSTGRES_DATABASE: ${{ secrets.POSTGRES_DATABASE }}
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
         run: npm run build
 
       - name: Archive production artifacts
@@ -84,3 +73,17 @@ jobs:
             tar -xzf whitepouches.tar.gz
             rm -rf whitepouches.tar.gz
             npm install
+
+            # Create .env file on EC2 instance
+            touch .env
+            MONGODB_USERNAME: ${{ secrets.MONGODB_USERNAME }}
+            MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
+            MONGODB_DATABASE: ${{ secrets.MONGODB_DATABASE }}
+            MONGODB_APPNAME: ${{ secrets.MONGODB_APPNAME }}
+            POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+            POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
+            POSTGRES_DATABASE: ${{ secrets.POSTGRES_DATABASE }}
+            POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+            POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
+            JWT_SECRET: ${{ secrets.JWT_SECRET }}
+            mv .env dist/

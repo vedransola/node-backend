@@ -11,7 +11,7 @@ export const getAllUsers = async (req: Request, res: Response) => {
       FROM users
       ORDER BY id
     `
-    
+
     const result = await pool.query(query)
     res.status(200).json({ users: result.rows})
   } catch (error) {
