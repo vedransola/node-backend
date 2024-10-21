@@ -7,16 +7,16 @@ if (!storyblokToken) {
 }
 
 const Storyblok = new StoryblokClient({
-  accessToken: storyblokToken,
+  accessToken: storyblokToken
 })
-
-interface Story {
-  name: string
-  content: any
-}
 
 interface StoryblokResponse<T> {
   story: T
+}
+
+interface Story {
+  name: string
+  content: object
 }
 
 export const getHome = async (req: Request, res: Response) => {
@@ -26,7 +26,6 @@ export const getHome = async (req: Request, res: Response) => {
     })
 
     const story = response.data as StoryblokResponse<Story>
-
     res.status(200).json(story?.story)
   } catch (error) {
     res.status(500).json({ message: (error as Error).message })
@@ -34,7 +33,7 @@ export const getHome = async (req: Request, res: Response) => {
 }
 
 export const getStory = async (req: Request, res: Response) => {
-  const { url } = req.params
+  const url = req.params[0]
 
   try {
     const response = await Storyblok.get(`cdn/stories/${url}`, {
@@ -42,7 +41,6 @@ export const getStory = async (req: Request, res: Response) => {
     })
 
     const story = response.data as StoryblokResponse<Story>
-
     res.status(200).json(story?.story)
   } catch (error) {
     res.status(500).json({ message: (error as Error).message })
