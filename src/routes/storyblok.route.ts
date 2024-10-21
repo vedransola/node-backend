@@ -4,6 +4,6 @@ import { getHome, getStory } from '../controllers/storyblok.controller'
 const storyblokRouter = express.Router()
 
 storyblokRouter.get('/', getHome)
-storyblokRouter.get('/:url', getStory)
+storyblokRouter.get('/*', getStory)
 
 export default storyblokRouter
