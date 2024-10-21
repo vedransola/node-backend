@@ -84,5 +84,6 @@ jobs:
             echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
             echo "POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}" >> .env
             echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+            echo "STORYBLOK_TOKEN=${{ secrets.STORYBLOK_TOKEN }}" >> .env
             mv .env dist/
             pm2 restart whitepouches-node
