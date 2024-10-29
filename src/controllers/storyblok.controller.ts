@@ -37,7 +37,7 @@ export const getAllStories = async (req: Request, res: Response) => {
 }
 
 export const getStory = async (req: Request, res: Response) => {
-  const { url } = req.params
+  const url = req.params[0]
 
   try {
     const response = await Storyblok.get(`cdn/stories/${url}`, {
