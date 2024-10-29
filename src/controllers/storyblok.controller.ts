@@ -16,10 +16,6 @@ interface Story {
   full_slug: string
 }
 
-interface StoryblokListResponse<T> {
-  stories: T[]
-}
-
 export const getAllStories = async (req: Request, res: Response) => {
   try {
     const response = await Storyblok.get('cdn/stories', {
