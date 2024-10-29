@@ -10,38 +10,43 @@ const Storyblok = new StoryblokClient({
   accessToken: storyblokToken
 })
 
-interface StoryblokResponse<T> {
-  story: T
-}
-
 interface Story {
   name: string
-  content: object
+  content: any,
+  full_slug: string
 }
 
-export const getHome = async (req: Request, res: Response) => {
+interface StoryblokListResponse<T> {
+  stories: T[]
+}
+
+export const getAllStories = async (req: Request, res: Response) => {
   try {
-    const response = await Storyblok.get(`cdn/stories/home`, {
-      version: 'draft',
+    const response = await Storyblok.get('cdn/stories', {
+      version: 'draft'
     })
 
-    const story = response.data as StoryblokResponse<Story>
-    res.status(200).json(story?.story)
+    const allStories = response.data.stories as Story[]
+
+    const filteredStories = allStories.filter(story => !story.full_slug.startsWith('shared-content/'))
+
+    res.status(200).json(filteredStories)
   } catch (error) {
     res.status(500).json({ message: (error as Error).message })
   }
 }
 
 export const getStory = async (req: Request, res: Response) => {
-  const url = req.params[0]
+  const { url } = req.params
 
   try {
     const response = await Storyblok.get(`cdn/stories/${url}`, {
-      version: 'draft',
+      version: 'draft'
     })
 
-    const story = response.data as StoryblokResponse<Story>
-    res.status(200).json(story?.story)
+    const story = response.data as { story: Story }
+
+    res.status(200).json(story.story)
   } catch (error) {
     res.status(500).json({ message: (error as Error).message })
   }
