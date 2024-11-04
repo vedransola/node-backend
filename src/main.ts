@@ -23,11 +23,11 @@ runBackend([
     router: protectedProductRouter
   },
   {
-    path: '/api/users',
-    router: protectedUserRouter
-  },
-  {
     path: '/api/storyblok',
     router: protectedStoryblokRouter
+  },
+  {
+    path: '/api/users',
+    router: protectedUserRouter
   }
 ])

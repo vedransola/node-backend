@@ -12,7 +12,7 @@ const Storyblok = new StoryblokClient({
 
 interface Story {
   name: string
-  content: any,
+  content: any
   full_slug: string
 }
 
