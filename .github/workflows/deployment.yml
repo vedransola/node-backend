@@ -70,7 +70,6 @@ jobs:
           port: ${{ secrets.DEPLOY_PORT }}
           script: |
             cd /home/ubuntu/deploy
-            rm -rf *
             tar -xzf whitepouches.tar.gz
             rm -rf whitepouches.tar.gz
             npm install
