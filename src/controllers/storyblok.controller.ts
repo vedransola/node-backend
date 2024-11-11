@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+import { isProduction } from '../helpers/envUtils'
 import StoryblokClient from 'storyblok-js-client'
 
 const storyblokToken = process.env.STORYBLOK_TOKEN
@@ -16,10 +17,12 @@ interface Story {
   full_slug: string
 }
 
+const version = isProduction() ? 'published' : 'draft'
+
 export const getAllStories = async (req: Request, res: Response) => {
   try {
     const response = await Storyblok.get('cdn/stories', {
-      version: 'draft'
+      version
     })
 
     const allStories = response.data.stories as Story[]
@@ -37,7 +40,7 @@ export const getStory = async (req: Request, res: Response) => {
 
   try {
     const response = await Storyblok.get(`cdn/stories/${url}`, {
-      version: 'draft'
+      version
     })
 
     const story = response.data as { story: Story }
