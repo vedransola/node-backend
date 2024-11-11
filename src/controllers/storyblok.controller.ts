@@ -19,7 +19,7 @@ interface Story {
 
 const version = isProduction() ? 'published' : 'draft'
 
-export const getAllStories = async (req: Request, res: Response) => {
+export const getAllStories = async (_: Request, res: Response) => {
   try {
     const response = await Storyblok.get('cdn/stories', {
       version
