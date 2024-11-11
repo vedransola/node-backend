@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+import Joi from 'joi'
 import { isProduction } from '../helpers/envUtils'
 import StoryblokClient from 'storyblok-js-client'
 
@@ -36,6 +37,17 @@ export const getAllStories = async (_: Request, res: Response) => {
 }
 
 export const getStory = async (req: Request, res: Response) => {
+  const urlSchema = Joi.alternatives().try(
+    Joi.string().min(1).required(),
+    Joi.number().min(1).required()
+  )
+
+  const { error } = urlSchema.validate(req.params[0])
+
+  if (error) {
+    return res.status(400).json({ message: 'Invalid URL parameter' })
+  }
+
   const url = req.params[0]
 
   try {
