@@ -1,6 +1,7 @@
 import cors from 'cors'
 import dotenv from 'dotenv'
 import express from 'express'
+import rateLimit from 'express-rate-limit'
 import authenticateToken from './middlewares/authenticateToken'
 import { connectMongoDB } from './config/mongodb-connection'
 import { createPostgresPool } from './config/postgres-connection'
@@ -8,7 +9,6 @@ import { createPostgresPool } from './config/postgres-connection'
 dotenv.config()
 
 export function runBackend(routers: Array<{ path: string, router: express.Router }>) {
-  // Create Express app
   const app = express()
 
   const corsOptions = {
@@ -17,10 +17,16 @@ export function runBackend(routers: Array<{ path: string, router: express.Router
     allowedHeaders: ['Content-Type', 'Authorization']
   }
 
-  // Apply CORS before other middlewares
   app.use(cors(corsOptions))
 
-  // Apply other middlewares
+  const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+    message: 'Too many requests, please try again later.'
+  })
+
+  app.use(limiter)
+
   app.use(express.json())
   app.use(authenticateToken)
 
