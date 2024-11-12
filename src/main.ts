@@ -1,9 +1,10 @@
 import express from 'express'
-import { runBackend } from './run-backend'
-import productRouter from './routes/product.route'
-import storyblokRouter from './routes/storyblok.route'
-import userRouter from './routes/user.route'
-import authenticateToken from './middlewares/authenticateToken'
+import 'tsconfig-paths/register'
+import { runBackend } from '@/run-backend'
+import productRouter from '@/routes/product.route'
+import storyblokRouter from '@/routes/storyblok.route'
+import userRouter from '@/routes/user.route'
+import authenticateToken from '@/middlewares/authenticateToken'
 
 const protectedProductRouter = express.Router()
 protectedProductRouter.use(authenticateToken)

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
-import { createPostgresPool } from '../config/postgres-connection'
-import { User, buildUpdateQuery } from '../helpers/queryBuilder'
+import { createPostgresPool } from '@/config/postgres-connection'
+import { User, buildUpdateQuery } from '@/helpers/queryBuilder'
 
 const pool = createPostgresPool()
 

@@ -2,9 +2,9 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import express from 'express'
 import rateLimit from 'express-rate-limit'
-import authenticateToken from './middlewares/authenticateToken'
-import { connectMongoDB } from './config/mongodb-connection'
-import { createPostgresPool } from './config/postgres-connection'
+import authenticateToken from '@/middlewares/authenticateToken'
+import { connectMongoDB } from '@/config/mongodb-connection'
+import { createPostgresPool } from '@/config/postgres-connection'
 
 dotenv.config()
 

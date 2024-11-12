@@ -1,5 +1,8 @@
 import express from 'express'
-import { getAllStories, getStory } from '../controllers/storyblok.controller'
+import {
+  getAllStories,
+  getStory
+} from '@/controllers/storyblok.controller'
 
 const storyblokRouter = express.Router()
 

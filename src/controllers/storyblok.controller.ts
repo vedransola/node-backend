@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import Joi from 'joi'
-import { isProduction } from '../helpers/envUtils'
+import { isProduction } from '@/helpers/envUtils'
 import StoryblokClient from 'storyblok-js-client'
 
 const storyblokToken = process.env.STORYBLOK_TOKEN
