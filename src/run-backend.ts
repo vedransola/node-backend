@@ -31,16 +31,16 @@ export function runBackend(routers: Array<{ path: string, router: express.Router
   app.use(express.json())
   app.use(authenticateToken)
 
-  // Serve static assets with caching for 1 day
-  app.use(express.static(path.join(__dirname, 'public'), { maxAge: '1d' }))
+  // // Serve static assets with caching for 1 day
+  // app.use(express.static(path.join(__dirname, 'public'), { maxAge: '1d' }))
 
-  // Global Cache-Control for API responses (1 hour caching)
-  app.use((req, res, next) => {
-    if (req.method === 'GET') {
-      res.setHeader('Cache-Control', 'public, max-age=3600')
-    }
-    next()
-  })
+  // // Global Cache-Control for API responses (1 hour caching)
+  // app.use((req, res, next) => {
+  //   if (req.method === 'GET') {
+  //     res.setHeader('Cache-Control', 'public, max-age=3600')
+  //   }
+  //   next()
+  // })
 
   // Connect to MongoDB
   connectMongoDB()
