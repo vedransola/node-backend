@@ -26,13 +26,13 @@ jobs:
         run: npm run build
 
       - name: Archive production artifacts
-        run: tar -czf whitepouches.tar.gz ./dist ./package.json
+        run: tar -czf node-backend.tar.gz ./dist ./package.json
 
       - name: Upload production artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: whitepouches
-          path: whitepouches.tar.gz
+          name: node-backend
+          path: node-backend.tar.gz
 
   deploy:
     needs: build
@@ -49,7 +49,7 @@ jobs:
       - name: Download production artifacts
         uses: actions/download-artifact@v4
         with:
-          name: whitepouches
+          name: node-backend
 
       - name: Copy files to EC2
         uses: appleboy/scp-action@master
@@ -58,7 +58,7 @@ jobs:
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_KEY }}
           port: ${{ secrets.DEPLOY_PORT }}
-          source: 'whitepouches.tar.gz'
+          source: 'node-backend.tar.gz'
           target: '/home/ubuntu/deploy'
 
       - name: SSH into EC2 and deploy
@@ -70,9 +70,9 @@ jobs:
           port: ${{ secrets.DEPLOY_PORT }}
           script: |
             cd /home/ubuntu/deploy
-            find . -not -name 'whitepouches.tar.gz' -delete
-            tar -xzf whitepouches.tar.gz
-            rm -rf whitepouches.tar.gz
+            find . -not -name 'node-backend.tar.gz' -delete
+            tar -xzf node-backend.tar.gz
+            rm -rf node-backend.tar.gz
             npm install
             touch .env
             echo "MONGODB_USERNAME=${{ secrets.MONGODB_USERNAME }}" >> .env
@@ -88,4 +88,4 @@ jobs:
             echo "STORYBLOK_TOKEN=${{ secrets.STORYBLOK_TOKEN }}" >> .env
             echo "NODE_ENV=${{ secrets.NODE_ENV }}" >> .env
             mv .env dist/
-            pm2 restart whitepouches-node
+            pm2 restart node-backend
